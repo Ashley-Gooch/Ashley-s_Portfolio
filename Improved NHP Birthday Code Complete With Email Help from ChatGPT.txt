@@ -9,7 +9,7 @@ def send_code_email():
 ...     email_password = 'hshjxnsjcfjbxnbr'
 ...     email_receiver = 'ashley@alphagenesisinc.com'
 ...     subject = 'NHP Birthdays'
-# Your Python code goes here
+
 ...     code = """
 ...     conn = pyodbc.connect(
 ... 	"Driver={ODBC Driver 17 for SQL Server};"
@@ -33,12 +33,9 @@ def send_code_email():
 ...             smtp.login(email_sender, email_password)
 ...             smtp.sendmail(email_sender, email_receiver, msg.as_string())
 
-# Schedule the email to be sent every day at 9:00 AM
 >>> schedule.every().day.at("09:00").do(send_code_email)
 Every 1 day at 09:00:00 do send_code_email() (last run: [never], next run: 2023-12-12 09:00:00)
 
-# Run the scheduled jobs
 while True:
     schedule.run_pending()
     time.sleep(1)
-    breakcommands and retrieve data.
