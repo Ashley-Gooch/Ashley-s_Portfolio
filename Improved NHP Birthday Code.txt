@@ -6,6 +6,7 @@ import time
 import pyodbc
 def send_code_email():
 ...     email_sender = 'ashley05gooch@gmail.com'
+    # Email password will be redacted for privacy
 ...     email_password = '[redacted]'
 ...     email_receiver = 'brandpromotionsonly@gmail.com'
 ...     subject = 'NHP Birthdays'
@@ -13,6 +14,7 @@ def send_code_email():
 ...     code = """
 ...     conn = pyodbc.connect(
 ... 	"Driver={ODBC Driver 17 for SQL Server};"
+    # Server and Database will be redacted for privacy
 ... 	"Server=[redacted];"
 ... 	"Database=[redacted];"
 ... 	"Trusted_Connection=yes"
@@ -37,4 +39,4 @@ def send_code_email():
 
 while True:
     schedule.run_pending()
-    time.sleep(1)
+    time.sleep(1);
