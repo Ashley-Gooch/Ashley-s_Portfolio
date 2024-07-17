@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d7026bc0-1b51-4250-86e9-b34c47961c7f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-    </list>
+    <list default="true" id="d7026bc0-1b51-4250-86e9-b34c47961c7f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -39,6 +37,18 @@
       <option name="presentableId" value="Default" />
       <updated>1721239491813</updated>
     </task>
+    <task id="LOCAL-00001" summary="Added the NHP birthday email code">
+      <created>1721240518544</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1721240518544</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Added the NHP birthday email code" />
+    <option name="LAST_COMMIT_MESSAGE" value="Added the NHP birthday email code" />
   </component>
 </project>
