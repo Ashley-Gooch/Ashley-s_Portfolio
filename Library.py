@@ -32,7 +32,6 @@ def search_books(search_term):
         print(f"Number of results found: {len(results)}")
 
     except Exception as e:
-        # Print any error that occurs during database operations
         print("Error:", e)
 
     finally:
