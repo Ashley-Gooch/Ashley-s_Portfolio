@@ -9,7 +9,6 @@ def create_connection():
     )
     return connection
 
-
 def search_books(search_term):
     results = []
     connection = None
