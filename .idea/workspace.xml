@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="d7026bc0-1b51-4250-86e9-b34c47961c7f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Library.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/Ashley-s_Portfolio.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/Ashley-s_Portfolio.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Library.py" beforeDir="false" afterPath="$PROJECT_DIR$/Library.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,11 +55,34 @@
       <option name="project" value="LOCAL" />
       <updated>1721240518544</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Added connection and search code">
+      <created>1721337807159</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1721337807159</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Updated">
+      <created>1721337833710</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1721337833710</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Updated">
+      <created>1721337859144</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1721337859144</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Added the NHP birthday email code" />
-    <option name="LAST_COMMIT_MESSAGE" value="Added the NHP birthday email code" />
+    <MESSAGE value="Added connection and search code" />
+    <MESSAGE value="Updated" />
+    <option name="LAST_COMMIT_MESSAGE" value="Updated" />
   </component>
 </project>
