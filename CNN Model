@@ -1,0 +1,63 @@
+import tensorflow as tf
+from tensorflow.keras import layers, models
+import numpy as np
+
+# Load CIFAR-10 images and labels
+(train_images, train_labels), (test_images, test_labels) = tf.keras.datasets.cifar10.load_data()
+
+# Normalize image pixel values to [0, 1]
+train_images = train_images.astype('float32') / 255.0
+test_images = test_images.astype('float32') / 255.0
+
+# Flatten label arrays
+train_labels = train_labels.flatten()
+test_labels = test_labels.flatten()
+
+def build_original_cnn():
+    model = models.Sequential()
+
+    # Conv Block 1
+    model.add(layers.Conv2D(32, (5, 5), strides=(2, 2), padding='same', input_shape=(32, 32, 3)))
+    model.add(layers.LeakyReLU(alpha=0.1))
+    model.add(layers.BatchNormalization())
+
+    # Conv Block 2
+    model.add(layers.Conv2D(64, (3, 3), padding='same'))
+    model.add(layers.LeakyReLU(alpha=0.1))
+    model.add(layers.Conv2D(64, (3, 3), padding='same'))
+    model.add(layers.LeakyReLU(alpha=0.1))
+    model.add(layers.AveragePooling2D(pool_size=(2, 2)))
+
+    # Conv Block 3
+    model.add(layers.Conv2D(128, (3, 3), strides=(2, 2), padding='same'))
+    model.add(layers.LeakyReLU(alpha=0.1))
+    model.add(layers.BatchNormalization())
+
+    # Classifier
+    model.add(layers.GlobalAveragePooling2D())
+    model.add(layers.Dense(100, activation='tanh'))
+    model.add(layers.Dropout(0.4))
+    model.add(layers.Dense(10, activation='softmax'))
+
+    return model
+
+model = build_original_cnn()
+
+model.compile(optimizer='adam',
+              loss='sparse_categorical_crossentropy',
+              metrics=['accuracy'])
+
+history = model.fit(train_images, train_labels,
+                    epochs=10,
+                    batch_size=64,
+                    validation_data=(test_images, test_labels))
+
+import matplotlib.pyplot as plt
+
+plt.plot(history.history['accuracy'], label='Train Acc')
+plt.plot(history.history['val_accuracy'], label='Val Acc')
+plt.title('Accuracy Over Epochs')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
