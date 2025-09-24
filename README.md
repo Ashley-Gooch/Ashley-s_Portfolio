@@ -8,3 +8,5 @@ Data Analytics Portfolio
 >A library management system utilizing Kaggle Books Dataset as a baseline, Pycharm, and MySQL Workbench. The system is an interactive prompt with choices: adding a book to the dataset, checking out a book, checking in a book, and searching for a book.
 
 [Project 3: Pokemon GAN](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Pokemon%20GAN)
+>The code is generating and displaying the architecture summaries of the generator and discriminator models in a GAN designed to create synthetic 64×64 Pokémon images.
+
