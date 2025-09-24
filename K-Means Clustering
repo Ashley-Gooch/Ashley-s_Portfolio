@@ -1,0 +1,48 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+import ace_tools as tools
+
+# Reload the dataset
+file_path = "/mnt/data/abalone.csv"
+abalone_df = pd.read_csv(file_path)
+
+# Select numerical features for clustering (excluding 'Rings' and 'Sex')
+features = ["Length", "Diameter", "Height", "Whole_weight", "Shucked_weight", 
+            "Viscera_weight", "Shell_weight"]
+
+# Standardize the features using z-score normalization
+scaler = StandardScaler()
+abalone_scaled = scaler.fit_transform(abalone_df[features])
+
+# Apply K-Means clustering with the optimal k = 3 (based on previous analysis)
+optimal_k = 3
+final_kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
+final_clusters = final_kmeans.fit_predict(abalone_scaled)
+
+# Add cluster labels to the dataset
+abalone_df["Cluster"] = final_clusters
+
+# Compute mean values of clusters for analysis
+cluster_means = abalone_df.groupby("Cluster")[features].mean()
+
+# Display results
+tools.display_dataframe_to_user(name="Cluster Mean Characteristics (k=3)", dataframe=cluster_means)
+
+# Visualize cluster distributions for key attributes
+fig, axes = plt.subplots(2, 3, figsize=(15, 10))
+selected_features = ["Length", "Diameter", "Whole_weight", "Shucked_weight", "Viscera_weight", "Shell_weight"]
+
+for i, col in enumerate(selected_features):
+    sns.boxplot(x="Cluster", y=col, data=abalone_df, ax=axes[i // 3, i % 3])
+    axes[i // 3, i % 3].set_title(f"{col} Distribution by Cluster")
+
+plt.tight_layout()
+plt.show()
+
+# Display cluster distribution counts
+cluster_counts = abalone_df["Cluster"].value_counts()
+cluster_counts
