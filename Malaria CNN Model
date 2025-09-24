@@ -1,0 +1,180 @@
+import tensorflow as tf
+from tensorflow.keras import layers, models
+from tensorflow.keras.applications import EfficientNetB0
+from tensorflow.keras.applications.efficientnet import preprocess_input
+
+IMG_SIZE = 128
+BATCH_SIZE = 16
+
+def preprocess(image, label):
+    image = tf.image.resize(image, [IMG_SIZE, IMG_SIZE])
+    image = preprocess_input(image)  # EfficientNet expects preprocessed input
+    return image, label
+
+(ds_train_raw, ds_test_raw), ds_info = tfds.load(
+    'malaria',
+    split=['train[:80%]', 'train[80%:]'],
+    shuffle_files=True,
+    as_supervised=True,
+    with_info=True
+)
+
+ds_train = ds_train_raw.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE)
+ds_train = ds_train.shuffle(1000).batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+
+ds_test = ds_test_raw.map(preprocess, num_parallel_calls=tf.data.AUTOTUNE)
+ds_test = ds_test.batch(BATCH_SIZE).prefetch(tf.data.AUTOTUNE)
+
+base_model = EfficientNetB0(
+    input_shape=(IMG_SIZE, IMG_SIZE, 3),
+    include_top=False,
+    weights='imagenet'
+)
+base_model.trainable = False  # Freeze for feature extraction
+
+model = models.Sequential([
+    base_model,
+    layers.GlobalAveragePooling2D(),
+    layers.Dropout(0.4),
+    layers.Dense(1, activation='sigmoid')
+])
+
+from tensorflow.keras.metrics import AUC
+
+model.compile(
+    optimizer='adam',
+    loss='binary_crossentropy',
+    metrics=['accuracy', AUC(name='auc')]
+)
+
+from tensorflow.keras.callbacks import EarlyStopping
+
+early_stop = EarlyStopping(
+    monitor='val_auc',
+    patience=3,
+    mode='max',
+    restore_best_weights=True
+)
+
+history = model.fit(
+    ds_train,
+    validation_data=ds_test,
+    epochs=10,
+    callbacks=[early_stop]
+)
+
+test_loss, test_accuracy, test_auc = model.evaluate(ds_test)
+print(f"Test Accuracy: {test_accuracy:.4f}")
+print(f"Test AUC: {test_auc:.4f}")
+
+y_pred_raw = []
+y_true = []
+
+for images, labels in ds_test:
+    preds = model.predict(images)
+    y_pred_raw.extend(preds.flatten())
+    y_true.extend(labels.numpy())
+
+from sklearn.metrics import classification_report
+y_pred_thresh = (np.array(y_pred_raw) > 0.5).astype(int)
+print(classification_report(y_true, y_pred_thresh, target_names=["Parasitized", "Uninfected"]))
+
+test_loss, test_accuracy, test_auc = model.evaluate(ds_test)
+print(f"Test Accuracy: {test_accuracy:.4f}")
+print(f"Test AUC: {test_auc:.4f}")
+
+from sklearn.metrics import classification_report, confusion_matrix
+import numpy as np
+from collections import Counter
+
+y_pred_thresh = (np.array(y_pred_raw) > 0.5).astype(int)
+
+print("Predicted label counts:", Counter(y_pred_thresh))
+print("True label counts:", Counter(y_true))
+
+print(classification_report(y_true, y_pred_thresh, target_names=["Parasitized", "Uninfected"]))
+
+import matplotlib.pyplot as plt
+
+# Accuracy
+plt.plot(history.history['accuracy'], label='Train Accuracy')
+plt.plot(history.history['val_accuracy'], label='Val Accuracy')
+plt.title('Accuracy over Epochs')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Loss
+plt.plot(history.history['loss'], label='Train Loss')
+plt.plot(history.history['val_loss'], label='Val Loss')
+plt.title('Loss over Epochs')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# AUC
+plt.plot(history.history['auc'], label='Train AUC')
+plt.plot(history.history['val_auc'], label='Val AUC')
+plt.title('AUC over Epochs')
+plt.xlabel('Epoch')
+plt.ylabel('AUC')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+
+cm = confusion_matrix(y_true, y_pred_thresh)
+disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Parasitized", "Uninfected"])
+disp.plot(cmap='Blues')
+plt.title("Confusion Matrix")
+plt.grid(False)
+plt.show()
+
+from sklearn.metrics import roc_curve, auc
+
+fpr, tpr, thresholds = roc_curve(y_true, y_pred_raw)
+roc_auc = auc(fpr, tpr)
+
+plt.figure()
+plt.plot(fpr, tpr, label=f'ROC curve (AUC = {roc_auc:.2f})')
+plt.plot([0, 1], [0, 1], 'k--')  # Diagonal
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve')
+plt.legend(loc='lower right')
+plt.grid(True)
+plt.show()
+
+import matplotlib.pyplot as plt
+import numpy as np
+import tensorflow as tf
+
+# Get a batch of test data
+for images, labels in ds_test.take(1):
+    preds = model.predict(images)
+    preds_labels = (preds.flatten() > 0.5).astype(int)
+
+    class_names = ['Parasitized', 'Uninfected']
+
+    plt.figure(figsize=(15, 10))
+
+    for i in range(16):  # Display 16 images
+        true_label = labels[i].numpy()
+        pred_label = preds_labels[i]
+
+        is_correct = true_label == pred_label
+        color = 'green' if is_correct else 'red'
+        symbol = '✅' if is_correct else '❌'
+
+        plt.subplot(4, 4, i + 1)
+        plt.imshow(images[i].numpy().astype("uint8"))
+        plt.axis('off')
+        plt.title(f"True: {class_names[true_label]}\nPred: {class_names[pred_label]} {symbol}", color=color)
+
+    plt.tight_layout()
+    plt.show()
