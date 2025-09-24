@@ -14,4 +14,4 @@ Data Analytics Portfolio
 >A master's project creating a CNN model using EfficientNetB0 and TensorFlow to accurately classify red blood cell images as either parasitized (malaria-infected) or uninfected.
 
 [Project 5: Abalone K-Means Clustering Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/K-Means%20Clustering)
-> A master's project segmenting abalone data by physical traits to infer biological maturity.
+> A master's project segmenting abalone data by physical traits to infer biological maturity using K-Means Clustering.
