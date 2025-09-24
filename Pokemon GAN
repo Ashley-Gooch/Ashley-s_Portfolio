@@ -1,0 +1,172 @@
+import tensorflow as tf
+from tensorflow.keras import layers
+import matplotlib.pyplot as plt
+import numpy as np
+import time
+import os
+import imageio
+import zipfile
+import glob
+
+# Parameters
+BATCH_SIZE = 64
+IMG_SIZE = (64, 64)
+NOISE_DIM = 100
+EPOCHS = 50
+NUM_EXAMPLES_TO_GENERATE = 16
+SEED = tf.random.normal([NUM_EXAMPLES_TO_GENERATE, NOISE_DIM])
+
+
+from google.colab import files
+uploaded = files.upload()
+
+import os
+import zipfile
+
+# === 1. Extract ZIP if needed ===
+zip_path = r'C:\Users\16784\Downloads\archive (6).zip'    # Keep the space
+extract_path = r'C:\Users\16784\Downloads\PokemonData'
+
+os.makedirs(extract_path, exist_ok=True)
+
+with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+    zip_ref.extractall(extract_path)
+
+print(f"✅ Extracted images to {extract_path}")
+
+# === 2. Dataset Preparation ===
+dataset = tf.keras.preprocessing.image_dataset_from_directory(
+    extract_path,
+    label_mode=None,
+    image_size=IMG_SIZE,
+    batch_size=BATCH_SIZE
+)
+
+pokemon_dataset = dataset.map(lambda x: (x / 127.5) - 1.0).cache().shuffle(1000).prefetch(tf.data.AUTOTUNE)
+
+# === 3. Generator Model ===
+def make_generator_model():
+    model = tf.keras.Sequential([
+        layers.Input(shape=(NOISE_DIM,)),
+        layers.Dense(4*4*1024, use_bias=False),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(),
+
+        layers.Reshape((4, 4, 1024)),
+
+        layers.Conv2DTranspose(512, (5, 5), strides=(2, 2), padding='same', use_bias=False),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(),
+
+        layers.Conv2DTranspose(256, (5, 5), strides=(2, 2), padding='same', use_bias=False),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(),
+
+        layers.Conv2DTranspose(128, (5, 5), strides=(2, 2), padding='same', use_bias=False),
+        layers.BatchNormalization(),
+        layers.LeakyReLU(),
+
+        layers.Conv2DTranspose(3, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh')
+    ])
+    return model
+
+# === 4. Discriminator Model ===
+def make_discriminator_model():
+    model = tf.keras.Sequential([
+        layers.Input(shape=(64, 64, 3)),
+
+        layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same'),
+        layers.LeakyReLU(),
+        layers.Dropout(0.3),
+
+        layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'),
+        layers.LeakyReLU(),
+        layers.Dropout(0.3),
+
+        layers.Conv2D(256, (5, 5), strides=(2, 2), padding='same'),
+        layers.LeakyReLU(),
+        layers.Dropout(0.3),
+
+        layers.Flatten(),
+        layers.Dense(1)
+    ])
+    return model
+
+# === 5. Loss Functions and Optimizers ===
+cross_entropy = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+
+def generator_loss(fake_output):
+    return cross_entropy(tf.ones_like(fake_output), fake_output)
+
+def discriminator_loss(real_output, fake_output):
+    real_loss = cross_entropy(tf.ones_like(real_output), real_output)
+    fake_loss = cross_entropy(tf.zeros_like(fake_output), fake_output)
+    return real_loss + fake_loss
+
+generator = make_generator_model()
+discriminator = make_discriminator_model()
+
+generator_optimizer = tf.keras.optimizers.Adam(1e-4)
+discriminator_optimizer = tf.keras.optimizers.Adam(1e-4)
+
+# === 6. Save images ===
+def generate_and_save_images(model, epoch, test_input):
+    predictions = model(test_input, training=False)
+    os.makedirs('generated_images', exist_ok=True)
+    fig = plt.figure(figsize=(4, 4))
+
+    for i in range(predictions.shape[0]):
+        plt.subplot(4, 4, i + 1)
+        img = (predictions[i] * 127.5 + 127.5).numpy().astype(np.uint8)
+        plt.imshow(img)
+        plt.axis('off')
+
+    filename = f'generated_images/image_at_epoch_{epoch:04d}.png'
+    plt.savefig(filename)
+    print(f"✅ {filename} saved")
+    plt.close(fig)
+
+# === 7. Single training step ===
+@tf.function
+def train_step(images):
+    noise = tf.random.normal([BATCH_SIZE, NOISE_DIM])
+
+    with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
+        generated_images = generator(noise, training=True)
+
+        real_output = discriminator(images, training=True)
+        fake_output = discriminator(generated_images, training=True)
+
+        gen_loss = generator_loss(fake_output)
+        disc_loss = discriminator_loss(real_output, fake_output)
+
+    generator_optimizer.apply_gradients(zip(gen_tape.gradient(gen_loss, generator.trainable_variables), generator.trainable_variables))
+    discriminator_optimizer.apply_gradients(zip(disc_tape.gradient(disc_loss, discriminator.trainable_variables), discriminator.trainable_variables))
+
+# === 8. Full training loop ===
+def train(dataset, epochs):
+    for epoch in range(epochs):
+        start = time.time()
+
+        for image_batch in dataset:
+            train_step(image_batch)
+
+        generate_and_save_images(generator, epoch + 1, SEED)
+
+        print(f"⏱️ Time for epoch {epoch + 1}: {time.time() - start:.2f} sec")
+
+    print("✅ Finished training!")
+
+# === 9. Create animated GIF ===
+def create_gif():
+    anim_file = 'pokemon_gan_training.gif'
+    with imageio.get_writer(anim_file, mode='I') as writer:
+        filenames = sorted(glob.glob('generated_images/image_at_epoch_*.png'))
+        for filename in filenames:
+            image = imageio.imread(filename)
+            writer.append_data(image)
+    print(f"🎞️ Saved animated GIF: {anim_file}")
+
+# To start training:
+
+train(pokemon_dataset, EPOCHS)
