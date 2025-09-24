@@ -6,3 +6,5 @@ Data Analytics Portfolio
 
 [Project 2: Library Management System](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Library.py)
 >A library management system utilizing Kaggle Books Dataset as a baseline, Pycharm, and MySQL Workbench. The system is an interactive prompt with choices: adding a book to the dataset, checking out a book, checking in a book, and searching for a book.
+
+[Project 3: Pokemon GAN](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Pokemon%20GAN)
