@@ -13,4 +13,5 @@ Data Analytics Portfolio
 [Project 4: Malaria CNN Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Malaria%20CNN%20Model)
 >A master's project creating a CNN model using EfficientNetB0 and TensorFlow to accurately classify red blood cell images as either parasitized (malaria-infected) or uninfected.
 
-[Project 5: K-Means Clustering Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Malaria%20CNN%20Model)
+[Project 5: Abalone K-Means Clustering Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/K-Means%20Clustering)
+> A master's project segmenting abalone data by physical traits to infer biological maturity.
