@@ -10,5 +10,7 @@ Data Analytics Portfolio
 [Project 3: Pokemon GAN Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Pokemon%20GAN)
 >A master's project generating and displaying the architecture summaries of the generator and discriminator models in a GAN designed to create synthetic 32x32 and 64×64 Pokémon images using TensorFlow.
 
-[Project 4: Malaria CNN Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/CNN%20Model)
->
+[Project 4: Malaria CNN Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Malaria%20CNN%20Model)
+>A master's project creating a CNN model using EfficientNetB0 and TensorFlow to accurately classify red blood cell images as either parasitized (malaria-infected) or uninfected.
+
+[Project 5: K-Means Clustering Model](https://github.com/Ashley-Gooch/Ashley-s_Portfolio/blob/main/Malaria%20CNN%20Model)
